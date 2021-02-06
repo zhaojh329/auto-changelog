@@ -27,18 +27,17 @@ export async function generate(
 
       const message = commit.commit.message.split("\n")[0];
 
-      let [, type, category, title, flag] = COMMIT_REGEX.exec(message) || [];
+      let [, type, title] = COMMIT_REGEX.exec(message) || [];
 
-      if (!title) continue;
+      if (!title) title = message;
 
-      flag = trim(flag);
-      if (flag === "ignore") continue;
+      if (!type) type = "";
 
       type = trim(type);
       type =
         (TYPES as { [type: string]: string | undefined })[type] ?? TYPES.other;
 
-      category = category ? trim(category) : "";
+      const category = "";
 
       title = trim(title).replace(
         PR_REGEX,
@@ -100,7 +99,7 @@ function trim(value: string): string {
   return value.trim().replace(/ {2,}/g, " ");
 }
 
-const COMMIT_REGEX = /^([^)]*)(?:\(([^)]*?)\)|):(.*?)(?:\[([^\]]+?)\]|)\s*$/;
+const COMMIT_REGEX = /([^:]+): (.*)/;
 const PR_REGEX = /#([1-9]\d*)/g;
 
 const TYPES = {
